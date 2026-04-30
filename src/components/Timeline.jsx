@@ -160,7 +160,7 @@ const Timeline = () => {
                   { name: "Arunachal", url: "https://sec.arunachal.gov.in/" },
                   { name: "Assam", url: "https://sec.assam.gov.in/" },
                   { name: "Bihar", url: "https://sec.bihar.gov.in/" },
-                  { name: "Chandigarh", url: "http://secchandigarh.gov.in/" },
+                  { name: "Chandigarh", url: "https://secchandigarh.gov.in/" },
                   { name: "Chhattisgarh", url: "https://sec.cg.gov.in/" },
                   { name: "DNH & DD", url: "https://sec-dnhdd.gov.in/" },
                   { name: "Delhi", url: "https://sec.delhi.gov.in/" },

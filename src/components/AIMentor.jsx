@@ -210,6 +210,33 @@ const AIMentor = ({ onQuery }) => {
                         </div>
                       );
                       if (line.startsWith('"') && line.endsWith('"')) return <p key={index} className="italic text-cyber-blue/80 bg-cyber-blue/5 p-3 rounded-xl border-l-2 border-cyber-blue my-3 text-xs">“{line.replace(/"/g, '')}”</p>;
+
+                      // Link parsing logic
+                      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+                      if (linkRegex.test(line)) {
+                        const parts = [];
+                        let lastIndex = 0;
+                        let match;
+                        linkRegex.lastIndex = 0;
+                        while ((match = linkRegex.exec(line)) !== null) {
+                          parts.push(line.substring(lastIndex, match.index));
+                          parts.push(
+                            <a
+                              key={match.index}
+                              href={match[2]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-cyber-blue hover:underline font-bold inline-flex items-center gap-1"
+                            >
+                              {match[1]} <Sparkles className="w-3 h-3" />
+                            </a>
+                          );
+                          lastIndex = linkRegex.lastIndex;
+                        }
+                        parts.push(line.substring(lastIndex));
+                        return <p key={index} className={index > 0 ? 'mt-1 text-gray-400' : ''}>{parts}</p>;
+                      }
+
                       return <p key={index} className={index > 0 ? 'mt-1 text-gray-400' : ''}>{line}</p>;
                     })}
                   </div>
