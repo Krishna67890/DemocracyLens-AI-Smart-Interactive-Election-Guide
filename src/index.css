@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cyber-dark text-gray-100 overflow-x-hidden font-sans;
+  }
+}
+
+.glass {
+  @apply bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20;
+}
+
+.neon-border {
+  @apply border border-cyber-blue shadow-[0_0_15px_rgba(0,210,255,0.5)];
+}
+
+.neon-text {
+  @apply text-cyber-blue drop-shadow-[0_0_8px_rgba(0,210,255,0.8)];
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
