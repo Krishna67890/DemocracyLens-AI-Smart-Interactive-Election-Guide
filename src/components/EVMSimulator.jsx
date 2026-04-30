@@ -293,8 +293,13 @@ const EVMSimulator = ({ onVoteCast }) => {
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[4px] rounded-[2.5rem] z-20">
                <Lock className="w-16 h-16 text-red-500 mb-4" />
                <p className="text-xl font-bold font-orbitron text-white uppercase tracking-widest">Quota Reached</p>
-               <p className="text-sm text-gray-400 mt-2">Practice resets in: <span className="text-cyber-blue font-mono">{timeLeft}</span></p>
-               <p className="text-[10px] text-gray-500 mt-4 uppercase tracking-[0.2em]">Next session available tomorrow</p>
+               <div className="mt-6 px-6 py-3 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl flex flex-col items-center gap-1 animate-pulse shadow-[0_0_20px_rgba(234,179,8,0.1)]">
+                 <p className="text-[11px] font-black uppercase tracking-widest text-yellow-500 flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
+                   Practice Resets in 1 Day
+                 </p>
+                 <p className="text-[9px] font-bold text-yellow-600/80 uppercase tracking-tighter">Opens at 00:00 (Midnight)</p>
+               </div>
             </div>
           )}
         </div>

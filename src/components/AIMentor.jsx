@@ -15,7 +15,65 @@ const AIMentor = ({ onQuery }) => {
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const scrollRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const synthRef = useRef(window.speechSynthesis);
+
+  const speak = (text) => {
+    // Cancel any ongoing speech
+    synthRef.current?.cancel();
+
+    // Remove markdown-like syntax for cleaner speech
+    const cleanText = text.replace(/[#*`]/g, '').replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'en-IN';
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    synthRef.current?.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    synthRef.current?.cancel();
+    setIsSpeaking(false);
+  };
+
+  useEffect(() => {
+    if (window.webkitSpeechRecognition || window.SpeechRecognition) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-IN';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current?.start();
+      setIsListening(true);
+    }
+  };
 
   useEffect(() => {
     if (user?.name && messages.length === 1 && messages[0].text.includes("Namaste!")) {
@@ -73,6 +131,15 @@ const AIMentor = ({ onQuery }) => {
       }
 
       return `### 📊 CIVIC INTELLIGENCE DOSSIER: ${user.name.toUpperCase()}\n\n**DIQ SCORE (Democracy Intelligence Quotient): ${dqScore}/100**\n\n**MATDAATA SAHAYAK AI ANALYSIS:**\n"**STATUS: ${status}** — ${analysis}"\n\n**CORE METRICS HARVESTED:**\n* **Current Rank:** Level ${rank}\n* **Experience Points:** ${totalXP} XP\n* **Next Evolution In:** ${xpToNext} XP\n* **Simulation Saturation:** ${votes} total sessions\n* **Consistency Index:** ${activityLevel} days active\n* **Daily Optimization:** ${todayVotes}/5 sessions\n\n**REFLECTIVE PASSAGE:**\n${quote}\n\n**STRATEGIC RECOMMENDATION:**\n${votes < 10 ? "Initiate 5 more **EVM Simulations** to reach 'Professional' handling status." : "Engage with the **Timeline & Facts** section to sharpen your knowledge of Constitutional Law."}`;
+    }
+
+    // Website Explanation & About Us Logic
+    if (q.includes('about you') || q.includes('who are you') || q.includes('about us') || q.includes('developer') || q.includes('creator') || q.includes('krishna')) {
+      return `### 🛠️ BEHIND THE LENS\n\n**DemocracyLens AI** was architected by **Krishna Patil Rajput**, Lead AI Architect & Full-Stack Developer, for the **Hack2skill Virtual PromptWars Challenge 2**.\n\n**TECH STACK:**\n* **Frontend:** React 18 & Vite\n* **Styling:** Tailwind CSS (Cyber-Civic Theme)\n* **Logic:** Framer Motion & Prompt Engineering\n* **Vision:** To bridge the 968M voter information gap using high-fidelity simulations.\n\nKrishna designed this platform to replace voter anxiety with confidence through neutral, AI-driven constitutional guidance.`;
+    }
+
+    if (q.includes('website') || q.includes('explain') || q.includes('how to use') || q.includes('features') || q.includes('guide')) {
+      return `### 🗺️ PLATFORM NAVIGATION GUIDE\n\nWelcome to the future of civic education! Here is how to master the platform:\n\n1. **EVM Simulator**: Practice voting on a high-fidelity virtual machine with VVPAT verification.\n2. **Journey Map**: Complete sequential steps from registration to the polling booth.\n3. **Roleplay Adventure**: Step into the shoes of different citizens (First-timer, Migrant, etc.).\n4. **Official Portals**: Access verified ECI & SEC gateways securely.\n5. **AI Mentor**: That's me! Ask me anything about Form 6, 7, 8, or the 2026 election cycle.\n\n**XP SYSTEM:** Every action you take earns you Experience Points (XP) to level up your Civic Identity!`;
     }
 
     if (q.includes('who am i') || q.includes('profile') || q.includes('my info')) {
@@ -135,6 +202,8 @@ const AIMentor = ({ onQuery }) => {
       const response = getMatdaataResponse(userMsg);
       setMessages(prev => [...prev, { type: 'ai', text: response }]);
       setIsTyping(false);
+      // Auto-speak AI responses
+      speak(response);
     }, 1200);
   };
 
@@ -198,6 +267,15 @@ const AIMentor = ({ onQuery }) => {
                   }`}>
                     {msg.type === 'ai' && (
                       <div className="absolute -left-2 top-0 w-1 h-8 bg-cyber-blue rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    )}
+                    {msg.type === 'ai' && (
+                      <button
+                        onClick={() => speak(msg.text)}
+                        className="absolute -right-10 top-0 p-2 glass rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-cyber-blue"
+                        title="Read aloud"
+                      >
+                        <Mic className="w-3 h-3" />
+                      </button>
                     )}
                     {/* Enhanced Rendering */}
                     {msg.text.split('\n').map((line, index) => {
@@ -266,8 +344,11 @@ const AIMentor = ({ onQuery }) => {
                     className="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-cyber-blue transition-all placeholder:text-gray-600 shadow-inner"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <button className="p-2 text-gray-500 hover:text-cyber-blue transition-colors">
-                      <Mic className="w-4 h-4" />
+                    <button
+                      onClick={toggleListening}
+                      className={`p-2 transition-colors ${isListening ? 'text-cyber-purple animate-pulse' : 'text-gray-500 hover:text-cyber-blue'}`}
+                    >
+                      <Mic className={`w-4 h-4 ${isListening ? 'fill-cyber-purple' : ''}`} />
                     </button>
                   </div>
                 </div>

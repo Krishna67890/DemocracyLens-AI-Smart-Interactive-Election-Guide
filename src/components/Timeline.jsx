@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Bell, Clock, Search, FileText, UserMinus, MapPin, Mail, ExternalLink, HelpCircle, Landmark } from 'lucide-react';
+import { Calendar, Bell, Clock, Search, FileText, UserMinus, MapPin, Mail, ExternalLink, HelpCircle, Landmark, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
 
 const events = [
@@ -160,9 +160,9 @@ const Timeline = () => {
                   { name: "Arunachal", url: "https://sec.arunachal.gov.in/" },
                   { name: "Assam", url: "https://sec.assam.gov.in/" },
                   { name: "Bihar", url: "https://sec.bihar.gov.in/" },
-                  { name: "Chandigarh", url: "https://secchandigarh.gov.in/" },
+                  { name: "Chandigarh", url: "https://secchandigarh.gov.in/", status: "legacy" },
                   { name: "Chhattisgarh", url: "https://sec.cg.gov.in/" },
-                  { name: "DNH & DD", url: "https://sec-dnhdd.gov.in/" },
+                  { name: "DNH & DD", url: "https://sec-dnhdd.gov.in/", status: "legacy" },
                   { name: "Delhi", url: "https://sec.delhi.gov.in/" },
                   { name: "Goa", url: "https://sec.goa.gov.in/" },
                   { name: "Gujarat", url: "https://sec.gujarat.gov.in/" },
@@ -173,7 +173,7 @@ const Timeline = () => {
                   { name: "Karnataka", url: "https://sec.karnataka.gov.in/" },
                   { name: "Kerala", url: "https://sec.kerala.gov.in/" },
                   { name: "Lakshadweep", url: "https://sec.utl.gov.in/" },
-                  { name: "MP", url: "https://mplocalpost.gov.in/" },
+                  { name: "MP", url: "https://mplocalpost.gov.in/", status: "legacy" },
                   { name: "Maharashtra", url: "https://sec.maharashtra.gov.in/" },
                   { name: "Manipur", url: "https://secmanipur.nic.in/" },
                   { name: "Meghalaya", url: "https://secmeghalaya.nic.in/" },
@@ -197,12 +197,42 @@ const Timeline = () => {
                     href={state.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold text-gray-400 hover:text-cyber-blue hover:border-cyber-blue/30 hover:bg-white/10 transition-all text-center truncate group"
+                    className={`p-3 bg-white/5 border rounded-xl text-[10px] font-bold transition-all text-center truncate group relative ${
+                      state.status === 'legacy'
+                        ? 'border-yellow-500/20 text-yellow-500/60 hover:text-yellow-400 hover:border-yellow-400/30'
+                        : 'border-white/10 text-gray-400 hover:text-cyber-blue hover:border-cyber-blue/30'
+                    }`}
                   >
                     <span className="group-hover:scale-105 inline-block transition-transform">{state.name}</span>
+                    {state.status === 'legacy' && (
+                      <div className="absolute top-1 right-1">
+                        <ShieldAlert className="w-2 h-2" />
+                      </div>
+                    )}
                   </a>
                 ))}
               </div>
+
+              {/* Advanced Security Disclaimer */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                className="mt-8 p-6 glass border-red-500/20 bg-red-500/5 rounded-[2rem] flex flex-col md:flex-row items-center gap-6 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                   <ShieldAlert className="w-24 h-24 text-red-500" />
+                </div>
+                <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center flex-shrink-0 border border-red-500/20">
+                   <ShieldAlert className="w-6 h-6 text-red-500" />
+                </div>
+                <div className="flex-1 text-center md:text-left z-10">
+                   <h4 className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] mb-2">External Domain & Security Protocol</h4>
+                   <p className="text-[10px] text-gray-400 leading-relaxed font-bold uppercase tracking-wider">
+                     DemocracyLens provides direct navigation to official ECI and SEC infrastructure for civic convenience. However, we have <span className="text-white">NO control</span> over the technical stability, security certificates (SSL), or accessibility of these government-hosted domains. Some portals may occasionally be offline or flagged by modern browsers due to legacy encryption. Use these gateways at your own discretion.
+                   </p>
+                </div>
+              </motion.div>
+
               <p className="text-[10px] text-gray-500 text-center italic mt-4 uppercase tracking-widest">
                 Connecting 28 States & 8 UTs to their respective State Election Commission (SEC) portals.
               </p>

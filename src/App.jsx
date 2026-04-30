@@ -117,7 +117,28 @@ function App() {
         <About />
       </main>
 
-      {user && <AIMentor onQuery={() => addXP(20)} />}
+      {user && (
+        <AIMentor
+          onQuery={() => addXP(20)}
+          onAction={(action) => {
+            if (action === 'open-login') setIsAuthModalOpen(true);
+            if (action === 'open-profile') setIsProfileOpen(true);
+            if (action === 'scroll-evm') document.getElementById('simulator')?.scrollIntoView({ behavior: 'smooth' });
+            if (action === 'scroll-journey') document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
+      )}
+
+      {/* For anonymous users to still have access to the Voice Guide/About Us */}
+      {!user && (
+        <AIMentor
+          onQuery={() => {}}
+          onAction={(action) => {
+            if (action === 'open-login') setIsAuthModalOpen(true);
+            if (action === 'scroll-facts') document.getElementById('facts')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
+      )}
 
       <AnimatePresence>
         {isAuthModalOpen && (
